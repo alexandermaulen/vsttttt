@@ -1,0 +1,19 @@
+name: Build VST3
+on: [push, workflow_dispatch]
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake -S MiPluginVST-juce-project -B build -DCMAKE_BUILD_TYPE=Release
+      - run: cmake --build build --config Release --parallel
+      - name: Reunir salida
+        shell: bash
+        run: |
+          mkdir out
+          cp -r "build/MiPluginVST_artefacts/Release/VST3/MiPluginVST.vst3" out/
+          cp "out/MiPluginVST.vst3/Contents/x86_64-win/MiPluginVST.vst3" "out/MiPluginVST.dll"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MiPluginVST-windows
+          path: out
